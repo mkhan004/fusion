@@ -1,0 +1,23 @@
+{
+  "name": "fusion",
+  "version": "1.0.0",
+  "description": "protractor selenium test framework",
+  "main": "index.js",
+  "scripts": {
+    "test": "test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mkhan004/fusion.git"
+  },
+  "keywords": [
+    "protractor",
+    "selenium"
+  ],
+  "author": "Shakil Khan",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/mkhan004/fusion/issues"
+  },
+  "homepage": "https://github.com/mkhan004/fusion#readme"
+}
