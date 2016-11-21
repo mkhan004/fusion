@@ -1,0 +1,133 @@
+---
+-
+  annotation: setup
+  path: /resources/search
+  feature: signin
+  actions:
+    navigate: path
+    sendKeys:
+      webElement: text
+    click: webElement
+    getText:
+      customVariable: webElement
+  beforePlugins:
+    - print
+    - refresh
+  afterPlugins:
+    - printResponse
+
+-
+  annotation: tearDown
+  path: /resources/search
+  feature: signin
+  actions:
+    navigate: path
+    sendKeys:
+      webElement: text
+    click: webElement
+    getText:
+      customVariable: webElement
+  beforePlugins:
+    - print
+    - refresh
+  afterPlugins:
+    - printResponse
+-
+  annotation: beforeEach
+  path: /resources/search
+  feature: signin
+  actions:
+    navigate: path
+    sendKeys:
+      webElement: text
+    click: webElement
+    getText:
+      customVariable: webElement
+  beforePlugins:
+    - print
+    - refresh
+  afterPlugins:
+    - printResponse
+
+-
+  annotation: afterEach
+  path: /resources/search
+  feature: signin
+  actions:
+    navigate: path
+    sendKeys:
+      webElement: text
+    click: webElement
+    getText:
+      customVariable: webElement
+  beforePlugins:
+    - print
+    - refresh
+  afterPlugins:
+    - printResponse
+
+-
+  id: 1
+  annotation: test
+  path: /resources/search
+  feature: signin
+  driverActions:
+    navigate: path
+    sendKeys:
+      webElement: text
+    click: webElement
+    dropdownList:
+      selectBy:
+        visibleText: text
+        index: index
+    getText:
+      customVariable: webElement
+    switchTo:
+      iFrame: webElement
+      window: windowId/default
+      alert: accept/reject
+    conditionCheck:
+      isPresent: webElement
+      isEnabled: webElement
+      isSelected: webElement
+    get:
+      pageTitle: customVariable
+      currentUrl: customVariable
+      tagName:
+        webElement: customVariable
+      attribute:
+        webElement: customVariable
+  beforePlugins:
+    - print
+    - refresh
+  afterPlugins:
+    - printResponse
+  description: Search resource for Two Dimension two vs two ([ [ Animalia, Bacteria ], [ Easy, Medium ] ])
+  validate:
+    equals:
+      customVariable: value
+    contains:
+      customVariable: value
+
+-
+  id: 1
+  dataProvider:
+    path: fkgj/jksdj/sjdh.xlx
+    db:
+      table: test
+  annotation: test
+  WebElement email = driver.findElement(By.name("Email"));
+  driverActions:
+    sendKeys:
+      email: {{email}}
+      password: {{password}}
+    click: submitButton
+    dropdownList:
+      selectBy:
+        visibleText: text
+  description: Signin with valid credentials
+  validate:
+    contains:
+      profilePageUrl: /signin.php
+      error: {{error}}
+
