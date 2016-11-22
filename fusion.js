@@ -2,7 +2,7 @@
 
 const program = require('commander');
 const utils = require('./src/lib/utils');
-const Tosser = require('./src/lib/tosser');
+const FusionGenerator = require('./src/lib/fusionGenerator');
 const fs = require('fs');
 
 program
@@ -32,7 +32,6 @@ let docFile = `doc/setup.yaml`;
 let doc = utils.loadYAMLOrParse(folder, docFile);
 
 doc.basePath = folder;
-utils.writeReadmeFile(doc);
 
 let requestFolders = config.requestFolders || ['requests'];
 
@@ -41,8 +40,8 @@ for (let reqFolder of requestFolders) {
   let files = fs.readdirSync(path);
   for (let fileName of files) {
     let requests = utils.loadYAMLOrParse(path, fileName);
-    let tosser = new Tosser(config, requests, path + '/' + fileName);
-    tosser.tossAll();
+    let fusionGeneratorInstance = new FusionGenerator(config, requests, path + '/' + fileName);
+    fusionGeneratorInstance.fusion();
   }
 }
 

@@ -4,7 +4,6 @@ const csv = require('csv-parse');
 const fs = require('fs');
 const zpad = require('zpad');
 const yaml = require('js-yaml');
-const jwt = require('jsonwebtoken');
 const mkdirp = require('mkdirp');
 const getDirName = require('path').dirname;
 
@@ -95,22 +94,29 @@ exports.writeOnExistingFile = (config, req) => {
   }
 };
 
+exports.writeMochaTest = (data) => {
+  try {
+    let path = `./test/mochaTest.js`;
+    fs.writeFile(path, ``);
+
+    mkdirp(getDirName(path), () => {
+      if (writeTitle) {
+        // fs.appendFile(path, data);
+        writeTitle = false;
+      }
+      fs.appendFile(path, data);
+    });
+  } catch (err) {
+    console.error(err);
+  }
+};
+
 let parseJsonSafe = exports.parseJsonSafe = (body) => {
   try {
     if (typeof body === 'object') return body;
     return JSON.parse(body);
   } catch (err) {
     return body;
-  }
-};
-
-exports.createJwt = (json, secret) => {
-  if (!json) return null;
-  try {
-    return jwt.sign(json, secret);
-  } catch (err) {
-    console.error(err);
-    return null;
   }
 };
 

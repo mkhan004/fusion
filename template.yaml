@@ -20,7 +20,7 @@
   annotation: tearDown
   path: /resources/search
   feature: signin
-  actions:
+  driverActions:
     navigate: path
     sendKeys:
       webElement: text
@@ -36,7 +36,7 @@
   annotation: beforeEach
   path: /resources/search
   feature: signin
-  actions:
+  driverActions:
     navigate: path
     sendKeys:
       webElement: text
@@ -53,7 +53,7 @@
   annotation: afterEach
   path: /resources/search
   feature: signin
-  actions:
+  driverActions:
     navigate: path
     sendKeys:
       webElement: text

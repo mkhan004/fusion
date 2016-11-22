@@ -2,41 +2,59 @@
 
 const webdriver = require('selenium-webdriver');
 const By = webdriver.By;
-// const until = webdriver.until;
+const utils = require('./utils');
 
 let driver;
 let request = '';
+let elementFile = '';
 
 module.exports.setCurrentRequest = (currentRequest) => {
-  request = currentRequest;
+  return new Promise((resolve, reject) => {
+    request = currentRequest;
+    resolve(request);
+  });
 };
 
 module.exports.setDriver = () => {
+  return new Promise((resolve, reject) => {
   if (request.req.annotation === 'setup') {
-    driver = new webdriver.Builder().forBrowser(request.config.browser).build();
-    this.navigate(request.fullUrl);
+    elementFile = request.req.feature;
+    driver = new webdriver
+      .Builder()
+      .forBrowser(request.config.browser)
+      .usingServer('http://localhost:4444/wd/hub')
+      .build();
   }
+    resolve(driver);
+  });
 };
 
-module.exports.navigate = (path) => {
-  driver.get(path);
+module.exports.navigate = () => {
+  return new Promise((resolve, reject) => {
+    driver.get(request.fullUrl);
+    resolve(driver);
+  });
 };
 
 module.exports.getDriver = () => {
-  return driver;
+  return new Promise((resolve, reject) => {
+    resolve(driver);
+  });
 };
 
 module.exports.processSendKeys = () => {
-  if (request.req.hasOwnProperty('driverActions')) {
-    if (request.req.driverActions.hasOwnProperty('sendKeys')) {
-      let sendKeys = request.req.driverActions.sendKeys;
-      for (let key in sendKeys) {
-        if (sendKeys.hasOwnProperty(key)) {
-          this.sendKeys(key, sendKeys[key]);
+  return new Promise((resolve, reject) => {
+    if (request.req.hasOwnProperty('driverActions')) {
+      if (request.req.driverActions.hasOwnProperty('sendKeys')) {
+        let sendKeys = request.req.driverActions.sendKeys;
+        for (let key in sendKeys) {
+          if (sendKeys.hasOwnProperty(key)) {
+            this.sendKeys(key, sendKeys[key]);
+          }
         }
       }
     }
-  }
+  });
 };
 
 module.exports.processClicks = () => {
@@ -54,6 +72,7 @@ module.exports.processClicks = () => {
 
 module.exports.sendKeys = (customVariable, data) => {
   let webElement = this.getWebElement(customVariable);
+  webElement.clear();
   webElement.sendKeys(data);
 };
 
@@ -63,17 +82,18 @@ module.exports.click = (customVariable) => {
 };
 
 module.exports.getWebElement = (customVariable) => {
-  let webElements = {
-    email: driver.findElement(By.name('Email')),
-    password: driver.findElement(By.name('Password')),
-    submitButton: driver.findElement(By.name('submit'))
-  };
-  return webElements[customVariable];
+  let elements = utils.loadYAMLOrParse(
+    request.config.basePath, 'elements/' + elementFile + '.yaml')[0];
+  if (elements.By.name[customVariable]) {
+    return driver.findElement(By.name(elements.By.name[customVariable]));
+  } else {
+    let err = `By type locator '${customVariable}' is not found in ${elementFile}.yaml`;
+    console.log(new Error(err));
+    process.exit(1);
+  }
 };
 
-module.exports.velidations = () => {
-  if (this.validations) {
-    console.log(this.validations);
-  }
+module.exports.tearDown = () => {
+  driver.quit();
 };
 

@@ -4,12 +4,13 @@ const fs = require('fs');
 
 let collections = [];
 
-class DriverHelper {
+class WebdriverHelper {
   constructor(request) {
     console.log(request);
     this.currentRequest = request;
     this.collections();
     this.plugins = this.loadPlugins();
+    console.log(collections)
     this.plugins['setCurrentRequest'].apply(null, [this.currentRequest]);
 
     for (let key in collections) {
@@ -19,13 +20,20 @@ class DriverHelper {
         }
       }
     }
+    collections = [];
   }
 
   collections() {
     if (this.currentRequest.req.annotation === 'setup') {
       collections.push('setDriver');
     }
+    // if (this.currentRequest.req.hasOwnProperty('path')) {
+    //   collections.push('navigate');
+    // }
     if (this.currentRequest.req.hasOwnProperty('driverActions')) {
+      if (this.currentRequest.req.driverActions.hasOwnProperty('navigate')) {
+        collections.push('navigate');
+      }
       if (this.currentRequest.req.driverActions.hasOwnProperty('sendKeys')) {
         collections.push('processSendKeys');
       }
@@ -36,9 +44,12 @@ class DriverHelper {
         collections.push('get');
       }
     }
-    // if (this.currentRequest.req.annotation === 'tearDown') {
-    //   collections.push('tearDown');
-    // }
+    if (this.currentRequest.req.annotation === 'tearDown') {
+      collections.push('tearDown');
+    }
+    if (this.currentRequest.req.hasOwnProperty('validate')) {
+      collections.push('validations');
+    }
     return collections;
   }
 
@@ -56,4 +67,4 @@ class DriverHelper {
   }
 }
 
-module.exports = DriverHelper;
+module.exports = WebdriverHelper;
