@@ -7,7 +7,7 @@ const fs = require('fs');
 
 program
   .version('1.0.0')
-  .arguments('folder <folderPath> env <testEnv> cycle <testCycle> rps <requestPerSecond>')
+  .arguments('folder <folderPath> env <testEnv> browser <browserName>')
   .option('-f, --folder <folderPath>', 'test suite folder path')
   .option('-e, --env <testEnv>', 'target test environment')
   .option('-b, --browser <browserName>', 'browser name')
