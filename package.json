@@ -4,7 +4,8 @@
   "description": "protractor selenium test framework",
   "main": "index.js",
   "scripts": {
-    "test": "mocha"
+    "test": "mocha",
+    "lint": "./node_modules/.bin/eslint . && ./node_modules/.bin/jscs ."
   },
   "bin": {
     "fusion": "./fusion.js"
@@ -24,12 +25,15 @@
   },
   "homepage": "https://github.com/mkhan004/fusion#readme",
   "dependencies": {
+    "chai": "^3.5.0",
+    "co": "^4.6.0",
     "commander": "^2.9.0",
     "csv-parse": "^1.1.7",
     "js-yaml": "^3.7.0",
     "lodash": "^4.17.2",
     "mkdirp": "^0.5.1",
     "selenium-webdriver": "^3.0.1",
+    "should": "^11.1.1",
     "zpad": "^0.5.0"
   },
   "devDependencies": {

@@ -1,9 +1,11 @@
 #!/usr/bin/env node
+'use strict';
 
 const program = require('commander');
 const utils = require('./src/lib/utils');
 const FusionGenerator = require('./src/lib/fusionGenerator');
 const fs = require('fs');
+const co = require('co');
 
 program
   .version('1.0.0')
@@ -28,10 +30,9 @@ let config = utils.loadYAMLOrParse(folder, configFile);
 config.basePath = folder;
 config.browser = browser;
 
-let docFile = `doc/setup.yaml`;
-let doc = utils.loadYAMLOrParse(folder, docFile);
+let testPath = __dirname + '/test';
 
-doc.basePath = folder;
+config.basePath = folder;
 
 let requestFolders = config.requestFolders || ['requests'];
 
@@ -39,9 +40,13 @@ for (let reqFolder of requestFolders) {
   let path = `${folder}/${reqFolder}`;
   let files = fs.readdirSync(path);
   for (let fileName of files) {
+    config.feature = fileName.replace('.yaml', '');
     let requests = utils.loadYAMLOrParse(path, fileName);
     let fusionGeneratorInstance = new FusionGenerator(config, requests, path + '/' + fileName);
-    fusionGeneratorInstance.fusion();
+    co(function *start() {
+      testPath += `/${config.feature}.js`;
+      yield fusionGeneratorInstance.fusion(testPath);
+    });
   }
 }
 

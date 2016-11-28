@@ -1,70 +1,197 @@
 'use strict';
 
-const fs = require('fs');
+const setupData = `
+'use strict';\n
+const should = require('should');
+const test = require('selenium-webdriver/testing');
+const webdriver = require('selenium-webdriver');
+const By = webdriver.By;
+const until = webdriver.until;
 
-let collections = [];
+const expect = require('chai').expect;`;
 
-class WebdriverHelper {
-  constructor(request) {
-    console.log(request);
-    this.currentRequest = request;
-    this.collections();
-    this.plugins = this.loadPlugins();
-    console.log(collections)
-    this.plugins['setCurrentRequest'].apply(null, [this.currentRequest]);
+let request;
+let testFeature;
+let finalTestSuite = '';
+let browser;
+let description;
 
-    for (let key in collections) {
-      if (collections.hasOwnProperty(key)) {
-        if (this.plugins[collections[key]]) {
-          this.plugins[collections[key]].apply(null, null);
-        }
-      }
-    }
-    collections = [];
-  }
-
-  collections() {
-    if (this.currentRequest.req.annotation === 'setup') {
-      collections.push('setDriver');
-    }
-    // if (this.currentRequest.req.hasOwnProperty('path')) {
-    //   collections.push('navigate');
-    // }
-    if (this.currentRequest.req.hasOwnProperty('driverActions')) {
-      if (this.currentRequest.req.driverActions.hasOwnProperty('navigate')) {
-        collections.push('navigate');
-      }
-      if (this.currentRequest.req.driverActions.hasOwnProperty('sendKeys')) {
-        collections.push('processSendKeys');
-      }
-      if (this.currentRequest.req.driverActions.hasOwnProperty('click')) {
-        collections.push('processClicks');
-      }
-      if (this.currentRequest.req.driverActions.hasOwnProperty('get')) {
-        collections.push('get');
-      }
-    }
-    if (this.currentRequest.req.annotation === 'tearDown') {
-      collections.push('tearDown');
-    }
-    if (this.currentRequest.req.hasOwnProperty('validate')) {
-      collections.push('validations');
-    }
-    return collections;
-  }
-
-  loadPlugins() {
+exports.setRequestProperties = (currentRequest) => {
+  return new Promise(function setRequestProperties(resolve, reject) {
     try {
-      let path = __dirname + `/webdriverHandler.js`;
-      let plugins = fs.statSync(path);
-      if (plugins && plugins.isFile()) {
-        plugins = require(path);
-      }
-      return plugins;
-    } catch (err) {
-      console.error(err);
-    }
-  }
-}
+      request = currentRequest;
+      testFeature = request.config.feature;
+      browser = request.config.browser;
 
-module.exports = WebdriverHelper;
+      if (request.req.annotation === 'test') {
+        description = request.req.description;
+      }
+
+      resolve(true);
+    } catch (err) {
+      reject(err);
+    }
+  });
+};
+
+exports.suiteSetup = () => {
+  return new Promise(function suiteSetup(resolve) {
+    finalTestSuite += setupData;
+    resolve(finalTestSuite);
+  });
+};
+
+exports.setDriver = () => {
+  return new Promise(function setDriver(resolve) {
+    let driverData = `
+    \nlet driver = new webdriver.Builder()
+    .forBrowser('${browser}')
+    .usingServer('http://localhost:4444/wd/hub')
+    .build();\n\n`;
+    finalTestSuite += driverData;
+    resolve(finalTestSuite);
+  });
+};
+
+exports.startScenario = () => {
+  return new Promise(function startScenario(resolve) {
+    let data = `test.describe('${testFeature}', function () {\n`;
+    finalTestSuite += data;
+    resolve(finalTestSuite);
+  });
+};
+
+exports.endScenario = () => {
+  return new Promise(function endScenario(resolve) {
+    let data = `});\n`;
+    finalTestSuite += data;
+    resolve(finalTestSuite);
+  });
+};
+
+exports.startBeforeTest = () => {
+  return new Promise(function startBeforeTest(resolve) {
+    let data = `  test.before(function * () {\n`;
+    finalTestSuite += data;
+    resolve(finalTestSuite);
+  });
+};
+
+exports.endBeforeTest = () => {
+  return new Promise(function endBeforeTest(resolve) {
+    let data = `  });\n`;
+    finalTestSuite += data;
+    resolve(finalTestSuite);
+  });
+};
+
+exports.startAfterTest = () => {
+  return new Promise(function startAfterTest(resolve) {
+    let data = `\n  test.after(function * () {\n`;
+    finalTestSuite += data;
+    resolve(finalTestSuite);
+  });
+};
+
+exports.endAfterTest = () => {
+  return new Promise(function endAfterTest(resolve) {
+    let data = `  });\n`;
+    finalTestSuite += data;
+    resolve(finalTestSuite);
+  });
+};
+
+exports.startTest = () => {
+  return new Promise(function startTest(resolve) {
+    let data = `\n  test.it('${description}', function * () {\n`;
+    finalTestSuite += data;
+    resolve(finalTestSuite);
+  });
+};
+
+exports.endTest = () => {
+  return new Promise(function endTest(resolve) {
+    let data = `  });\n`;
+    finalTestSuite += data;
+    resolve(finalTestSuite);
+  });
+};
+
+exports.getFinalTestSuite = () => {
+  return new Promise(function getFinalTestSuite(resolve) {
+    resolve(finalTestSuite);
+  });
+};
+
+exports.sendKeys = (element, value) => {
+  return new Promise(function sendKeys(resolve) {
+    let data = `    yield ${element}.sendKeys('${value}');\n`;
+    finalTestSuite += data;
+    resolve(finalTestSuite);
+  });
+};
+
+exports.click = (element) => {
+  return new Promise(function click(resolve) {
+    let data = `    yield ${element}.click();\n`;
+    finalTestSuite += data;
+    resolve(finalTestSuite);
+  });
+};
+
+exports.get = () => {
+  return new Promise(function get(resolve) {
+    let baseUrl = request.config.url;
+    let data = `    yield driver.get('${baseUrl}');\n`;
+    finalTestSuite += data;
+    resolve(finalTestSuite);
+  });
+};
+
+exports.quit = () => {
+  return new Promise(function quit(resolve) {
+    let data = `    yield driver.quit();\n`;
+    finalTestSuite += data;
+    resolve(finalTestSuite);
+  });
+};
+
+exports.timeout = (time) => {
+  return new Promise(function timeout(resolve) {
+    let data = `    this.timeout(${time});\n`;
+    finalTestSuite += data;
+    resolve(finalTestSuite);
+  });
+};
+
+exports.getTitle = (key) => {
+  return new Promise(function getTitle(resolve) {
+    let data = `    let ${key} = yield driver.getTitle();\n`;
+    finalTestSuite += data;
+    resolve(finalTestSuite);
+  });
+};
+
+exports.getCurrentUrl = (key) => {
+  return new Promise(function getCurrentUrl(resolve) {
+    let data = `    let ${key} = yield driver.getCurrentUrl();\n`;
+    finalTestSuite += data;
+    resolve(finalTestSuite);
+  });
+};
+
+exports.contains = (key, value) => {
+  return new Promise(function contains(resolve) {
+    let data = `    expect(${key}).to.contain('${value}');\n`;
+    finalTestSuite += data;
+    resolve(finalTestSuite);
+  });
+};
+
+exports.equals = (key, value) => {
+  return new Promise(function equals(resolve) {
+    let data = `    expect(${key}).to.equal('${value}');\n`;
+    finalTestSuite += data;
+    resolve(finalTestSuite);
+  });
+};

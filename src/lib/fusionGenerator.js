@@ -1,9 +1,13 @@
 'use strict';
 const _ = require('lodash');
 const FusionHelper = require('./fusionHelper');
+const webdriverHelper = require('./webdriverHelper');
+const TestGenerator = require('./testGenerator');
+const utils = require('./utils');
 const fs = require('fs');
 const path = require('path');
-const WebdriverHelper = require('./webdriverHelper');
+
+let testGeneratorInstance = new TestGenerator();
 
 module.exports = class FusionGenerator
 {
@@ -35,9 +39,14 @@ module.exports = class FusionGenerator
     }
   }
 
-  fusion() {
+  *fusion(testPath) {
     for (let reactor of this.reactors) {
-      new WebdriverHelper(reactor);
+      // console.log(JSON.stringify(this.reactors, null, 2));
+      yield testGeneratorInstance.testGenerator(reactor);
     }
+
+    let data = yield webdriverHelper.getFinalTestSuite();
+    console.log(data);
+    yield utils.writeMochaTest(testPath, data, true);
   }
 };

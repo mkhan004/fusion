@@ -94,21 +94,26 @@ exports.writeOnExistingFile = (config, req) => {
   }
 };
 
-exports.writeMochaTest = (data) => {
-  try {
-    let path = `./test/mochaTest.js`;
-    fs.writeFile(path, ``);
+exports.writeMochaTest = (path, data, clear) => {
+  return new Promise(function (resolve, reject) {
+    try {
+      console.log('path:', path);
+      if (!exists(path)) {
+        mkdirp(getDirName(path), () => {
+          fs.writeFile(path, ``);
+        });
+      }
 
-    mkdirp(getDirName(path), () => {
-      if (writeTitle) {
-        // fs.appendFile(path, data);
-        writeTitle = false;
+      if (clear) {
+        fs.writeFile(path, ``);
       }
       fs.appendFile(path, data);
-    });
-  } catch (err) {
-    console.error(err);
-  }
+      resolve(data);
+    } catch (err) {
+      reject(err);
+      console.error(err);
+    }
+  });
 };
 
 let parseJsonSafe = exports.parseJsonSafe = (body) => {
