@@ -10,15 +10,17 @@ const co = require('co');
 
 program
   .version('1.0.0')
-  .arguments('folder <folderPath> env <testEnv> browser <browserName>')
+  .arguments('folder <folderPath> env <testEnv> browser <browserName> testCase [testCaseNumber]')
   .option('-f, --folder <folderPath>', 'test suite folder path')
   .option('-e, --env <testEnv>', 'target test environment')
   .option('-b, --browser <browserName>', 'browser name')
+  .option('-t, --testCase [testCaseNumber]', 'target test case number')
   .parse(process.argv);
 
 let folder = program.folder || '.';
 let testEnv = program.env;
 let browser = program.browser;
+let testCaseNumber = program.testCase;
 
 if (!folder || !testEnv || !browser) {
   program.outputHelp();
@@ -30,10 +32,12 @@ let config = utils.loadYAMLOrParse(folder, configFile);
 
 config.basePath = folder;
 config.browser = browser;
+config.basePath = folder;
+if (testCaseNumber !== 'undefined') {
+  config.testCaseNumber = testCaseNumber;
+}
 
 let testPath = __dirname + '/test';
-
-config.basePath = folder;
 
 let requestFolders = config.requestFolders || ['requests'];
 

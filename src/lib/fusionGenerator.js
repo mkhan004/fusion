@@ -41,7 +41,7 @@ module.exports = class FusionGenerator
 
   *fusion(testPath) {
     for (let reactor of this.reactors) {
-      // console.log(JSON.stringify(this.reactors, null, 2));
+      console.log(JSON.stringify(reactor, null, 2));
       yield testGeneratorInstance.testGenerator(reactor);
     }
 

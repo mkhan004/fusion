@@ -23,7 +23,13 @@ class TestGenerator {
     }
 
     if (request.req.annotation === 'test') {
-      yield this.processTest(request);
+      if (request.config.hasOwnProperty('testCaseNumber')) {
+        if (request.req.id === parseInt(request.config.testCaseNumber)) {
+          yield this.processTest(request);
+        }
+      } else {
+        yield this.processTest(request);
+      }
     }
   }
 

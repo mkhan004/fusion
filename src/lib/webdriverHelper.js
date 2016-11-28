@@ -10,6 +10,7 @@ const until = webdriver.until;
 
 const expect = require('chai').expect;`;
 
+let id;
 let request;
 let testFeature;
 let finalTestSuite = '';
@@ -22,6 +23,7 @@ exports.setRequestProperties = (currentRequest) => {
       request = currentRequest;
       testFeature = request.config.feature;
       browser = request.config.browser;
+      id = request.req.id;
 
       if (request.req.annotation === 'test') {
         description = request.req.description;
@@ -103,7 +105,7 @@ exports.endAfterTest = () => {
 
 exports.startTest = () => {
   return new Promise(function startTest(resolve) {
-    let data = `\n  test.it('${description}', function * () {\n`;
+    let data = `\n  test.it('${id}) ${description}', function * () {\n`;
     finalTestSuite += data;
     resolve(finalTestSuite);
   });
