@@ -1,7 +1,6 @@
 #!/usr/bin/env node
 'use strict';
 
-require('shelljs/global');
 const program = require('commander');
 const utils = require('./src/lib/utils');
 const FusionGenerator = require('./src/lib/fusionGenerator');

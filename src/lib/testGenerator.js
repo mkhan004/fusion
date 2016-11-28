@@ -139,9 +139,20 @@ class TestGenerator {
   }
 
   getWebElement(customVariable, request) {
-    let elements = utils.loadYAMLOrParse(
-      request.config.basePath, 'elements/' + request.config.feature + '.yaml')[0];
+    let elementFileName;
+    if (customVariable.indexOf('.') > -1) {
+      let array = customVariable.split('.');
+      elementFileName = array[0].trim();
+      customVariable = array[1].trim();
+    } else {
+      elementFileName = request.config.feature;
+    }
+
+    console.log('elements/' + elementFileName + '.yaml');
+
     return new Promise(function getWebElement(resolve) {
+      let elements = utils.loadYAMLOrParse(
+      request.config.basePath, 'elements/' + elementFileName + '.yaml')[0];
       if (elements.By.name[customVariable]) {
         resolve(`driver.findElement(By.name('${elements.By.name[customVariable]}'))`);
       } else if (elements.By.css[customVariable]) {
