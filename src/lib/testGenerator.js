@@ -1,6 +1,7 @@
 'use strict';
 
 const webdriverHelper = require('./webdriverHelper');
+const traverse = require('traverse');
 const utils = require('./utils');
 
 let suiteSetup = true;
@@ -24,7 +25,7 @@ class TestGenerator {
 
     if (request.req.annotation === 'test') {
       if (request.config.hasOwnProperty('testCaseNumber')) {
-        if (request.req.id === parseInt(request.config.testCaseNumber)) {
+        if (request.req.id === parseInt(request.config.testCaseNumber, 10)) {
           yield this.processTest(request);
         }
       } else {
@@ -152,16 +153,23 @@ class TestGenerator {
 
     return new Promise(function getWebElement(resolve) {
       let elements = utils.loadYAMLOrParse(
-      request.config.basePath, 'elements/' + elementFileName + '.yaml')[0];
-      if (elements.By.name[customVariable]) {
-        resolve(`driver.findElement(By.name('${elements.By.name[customVariable]}'))`);
-      } else if (elements.By.css[customVariable]) {
-        resolve(`driver.findElement(By.css("${elements.By.css[customVariable]}"))`);
-      } else if (elements.By.linkText[customVariable]) {
-        resolve(`driver.findElement(By.linkText('${elements.By.linkText[customVariable]}'))`);
-      } else {
-        let elementFile = request.config.feature;
-        let err = `By type locator '${customVariable}' is not found in ${elementFile}.yaml`;
+        request.config.basePath, 'elements/' + elementFileName + '.yaml')[0];
+
+      let pathsArray = traverse(elements).paths();
+      let present = false;
+
+      pathsArray.forEach(function (path) {
+        if (path.indexOf(customVariable) > -1) {
+          let value = traverse(elements).get(path);
+          path.splice(-1, 1);
+          let parentPath = path.join('.');
+          resolve(`driver.findElement(` + parentPath + `('${value}'))`);
+          present = true;
+        }
+      });
+
+      if (!present) {
+        let err = `By type locator '${customVariable}' is not found in ${elementFileName}.yaml`;
         console.log(new Error(err));
         process.exit(1);
       }

@@ -23,5 +23,5 @@ if (!folder || !testEnv || !browser) {
   process.exit(1);
 }
 
-exec(`generator -f ${folder} -e ${testEnv} -b ${browser} -t ${testCaseNumber}`, {silent:true});
-exec(`npm test`).stdout;
+exec(`generator -f ${folder} -e ${testEnv} -b ${browser} -t ${testCaseNumber}`, { silent: false });
+// exec(`npm test`).stdout;

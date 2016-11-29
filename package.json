@@ -36,6 +36,7 @@
     "selenium-webdriver": "^3.0.1",
     "shelljs": "^0.7.5",
     "should": "^11.1.1",
+    "traverse": "^0.6.6",
     "zpad": "^0.5.0"
   },
   "devDependencies": {

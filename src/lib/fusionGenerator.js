@@ -48,5 +48,6 @@ module.exports = class FusionGenerator
     let data = yield webdriverHelper.getFinalTestSuite();
     console.log(data);
     yield utils.writeMochaTest(testPath, data, true);
+    data = '';
   }
 };
