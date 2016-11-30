@@ -1,0 +1,47 @@
+{
+  "name": "fusion",
+  "version": "1.0.0",
+  "description": "protractor selenium test framework",
+  "main": "index.js",
+  "scripts": {
+    "test": "mocha",
+    "lint": "./node_modules/.bin/eslint . && ./node_modules/.bin/jscs ."
+  },
+  "bin": {
+    "fusion": "./fusion.js",
+    "generator": "./generator.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mkhan004/fusion.git"
+  },
+  "keywords": [
+    "protractor",
+    "selenium"
+  ],
+  "author": "Shakil Khan",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/mkhan004/fusion/issues"
+  },
+  "homepage": "https://github.com/mkhan004/fusion#readme",
+  "dependencies": {
+    "chai": "^3.5.0",
+    "co": "^4.6.0",
+    "commander": "^2.9.0",
+    "csv-parse": "^1.1.7",
+    "js-yaml": "^3.7.0",
+    "lodash": "^4.17.2",
+    "mkdirp": "^0.5.1",
+    "selenium-webdriver": "^3.0.1",
+    "shelljs": "^0.7.5",
+    "should": "^11.1.1",
+    "traverse": "^0.6.6",
+    "zpad": "^0.5.0"
+  },
+  "devDependencies": {
+    "eslint": "^1.10.3",
+    "eslint-config-airbnb": "^0.1.0",
+    "jscs": "^3.0.3"
+  }
+}
